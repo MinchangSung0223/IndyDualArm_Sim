@@ -2,8 +2,34 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import pybullet as p
 import time
+from math import pi,sqrt,cos,sin
 import pybullet_data
 import numpy as np
+import json
+from modern_robotics import FKinSpace,IKinSpace,CartesianTrajectory,TransInv,Adjoint,JacobianBody,JacobianSpace,se3ToVec,MatrixLog6
+file_path = "./MR_params.json"
+data={}
+with open(file_path, 'r') as file:
+    data = json.load(file)
+relativeSlist = np.reshape(np.array(data['relativeSlist']),(6,12))
+relativeBlist = np.reshape(np.array(data['relativeBlist']),(6,12))
+relativeM = np.reshape(np.array(data['relativeM']),(4,4))
+baseSlist = np.reshape(np.array(data['baseSlist']),(6,6))
+baseM = np.reshape(np.array(data['baseM']),(4,4))
+
+Slist = np.reshape(np.array(data['Slist']),(6,6))
+Blist = np.reshape(np.array(data['Blist']),(6,6))
+M = np.reshape(np.array(data['M']),(4,4))
+
+def rotMat(theta,axis):
+	R = np.eye(3)
+	if axis == "x":
+		R = np.array([[1 ,0 ,0],[0 ,cos(theta),-sin(theta)],[0 ,sin(theta) ,cos(theta)]])
+	if axis == "y":
+		R = np.array([[cos(theta),0 ,sin(theta)],[0 ,1,0],[-sin(theta),0,cos(theta)]])
+	if axis == "z":
+		R = np.array([[cos(theta),-sin(theta) ,0],[sin(theta) ,cos(theta),0],[0 ,0, 1]])
+	return R
 np.set_printoptions(precision=4, suppress=True)
 import math
 import modern_robotics as mr
@@ -41,16 +67,32 @@ MAX_TORQUES_ALL = np.array([431.97,431.97,197.23,79.79,79.79,79.79,431.97,431.97
 initializeActiveJoints(robotId,right_joint_num_list)
 initializeActiveJoints(robotId,left_joint_num_list)
 
-
+Tb = np.eye(4)
+Tb[0:3,0:3] = rotMat(-np.pi/3,"x")
+B_y = 0.15634
+B_z = 0.37722
+Tb[1,3] = B_y;
+Tb[2,3] = B_z;
 endTime = 300;
 left_qddot = [0,0,0,0,0,0]
 right_qddot = [0,0,0,0,0,0]
 for t in np.arange(0,endTime,timeStep):
-	#left_q,left_qdot = getJointStates(robotId,left_joint_num_list)
-	#right_q,right_qdot = getJointStates(robotId,right_joint_num_list)	
+	left_q,left_qdot = getJointStates(robotId,left_joint_num_list)
+	right_q,right_qdot = getJointStates(robotId,right_joint_num_list)	
 	jointState = np.array(p.getJointStates(robotId,[2,3,4,5,6,7,10,11,12,13,14,15]))
 	q = np.array(jointState[:,0])
 	qdot = np.array(jointState[:,1])
+	#print(left_q)
+	rel_q = np.concatenate((-np.flip(right_q),left_q))
+	relT = FKinSpace(relativeM,relativeSlist,rel_q)
+	rightT = Tb@ FKinSpace(M,Slist,right_q)
+	rightT_= getEEFPose(robotId,8)
+	leftT = rightT@ relT
+	leftT_= getEEFPose(robotId,16)
+	print("leftT")
+	print(leftT)
+	print("leftT_")
+	print(leftT_)
 	ID = p.calculateInverseDynamics(robotId,[q[0],q[1],q[2],q[3],q[4],q[5],q[6],q[7],q[8],q[9],q[10],q[11]],[qdot[0],qdot[1],qdot[2],qdot[3],qdot[4],qdot[5],qdot[6],qdot[7],qdot[8],qdot[9],qdot[10],qdot[11]],[0,0,0,0,0,0,0,0,0,0,0,0]);
 	#right_ID = p.calculateInverseDynamics(robotId,right_q,right_qdot,right_qddot);	
 	

@@ -60,6 +60,6 @@ def setTorques(robotId, active_joints_num,torques,MAX_TORQUES):
 		actuated_torques.append(saturation(torques[idx],MAX_TORQUES[idx]))
 		
 		idx=idx+1
-	print("input torques : ", torques)
-	print("actuated_torques : ", actuated_torques)
+	#print("input torques : ", torques)
+	#print("actuated_torques : ", actuated_torques)
 			
