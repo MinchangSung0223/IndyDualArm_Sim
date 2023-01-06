@@ -62,4 +62,10 @@ def setTorques(robotId, active_joints_num,torques,MAX_TORQUES):
 		idx=idx+1
 	#print("input torques : ", torques)
 	#print("actuated_torques : ", actuated_torques)
-			
+def setPosition(robotId, active_joints_num,position_list,MAX_TORQUES):
+	idx =0
+	for i in active_joints_num:
+		p.setJointMotorControl2(robotId, i, p.POSITION_CONTROL,targetPosition=position_list[idx], force=MAX_TORQUES[idx])	
+		idx=idx+1
+	#print("input torques : ", torques)
+	#print("actuated_torques : ", actuated_torques)
