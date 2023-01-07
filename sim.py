@@ -10,11 +10,11 @@ reset_q(robotId,HomePos)
 endTime = 5;
 
 Orn_Kp = 20.0/30.0;
-Orn_Kd = Orn_Kp/20.0;
+Orn_Kd = Orn_Kp/100.0;
 Orn_Ki = Orn_Kp/100.0;
 
 Pos_Kp = 20.0
-Pos_Kd = Pos_Kp/20.0;
+Pos_Kd = Pos_Kp/50.0;
 Pos_Ki = Pos_Kp/100.0;
 Xe_rel_sum = np.array([0,0,0,0,0,0]).T
 data={}
@@ -38,16 +38,17 @@ for t in np.arange(0,endTime,dt):
 	q_r,qdot_r = getJointStates(robotId,r_j_list)	
 	q,qdot = getJointStates(robotId,a_j_list)
 	q_rel = get_q_rel(q_r,q_l)
+	qdot_rel = get_qdot_rel(qdot_r,qdot_l);
 	T_rel = FKinSpace(relM,relSlist,q_rel)
 	T_r = Tb @  FKinSpace(baseM,baseSlist,q_r)
 	T_l =T_r @ T_rel
 	Js_r,Jb_r,pinvJs_r,pinvJb_r=getJacobian(baseSlist,baseBlist,q_r)
 	Js_rel,Jb_rel,pinvJs_rel,pinvJb_rel = getJacobian(relSlist,relBlist,q_rel)
-	#Xd = np.array([[-1 ,0 ,0 ,0],[0,1 ,0 ,0],[0 ,0 ,-1 ,0.4],[0 ,0 ,0 ,1]])
-	Xd = Xd_list[idx]
+	Xd = np.array([[-1 ,0 ,0 ,0],[0,1 ,0 ,0],[0 ,0 ,-1 ,0.4],[0 ,0 ,0 ,1]])
+	#Xd = Xd_list[idx]
 	Xe_rel = se3ToVec(MatrixLog6(TransInv(T_rel)@ Xd))
-	V_rel = Jb_rel@q_rel
-	Xedot_rel = Adjoint(TransInv(T_rel)@ Xd) @ np.array([0,0,0,0,0,0]).T -Xe_rel
+	V_rel = Jb_rel@qdot_rel
+	Xedot_rel = Adjoint(TransInv(T_rel)@ Xd) @ np.array([0,0,0,0,0,0]).T -V_rel
 	Xe_rel_sum = Xe_rel_sum+Xe_rel*dt;
 
 	Kp_Xe_rel = Xe_rel

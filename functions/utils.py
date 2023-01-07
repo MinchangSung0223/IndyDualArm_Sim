@@ -87,6 +87,9 @@ def reset_q_l(q_l):
 def get_q_rel(q_r,q_l):
 	q_rel = [-q_r[5],-q_r[4],-q_r[3],-q_r[2],-q_r[1],-q_r[0],q_l[0],q_l[1],q_l[2],q_l[3],q_l[4],q_l[5]]
 	return np.array(q_rel).T;
+def get_qdot_rel(qdot_r,qdot_l):
+	qdot_rel = [-qdot_r[5],-qdot_r[4],-qdot_r[3],-qdot_r[2],-qdot_r[1],-qdot_r[0],qdot_l[0],qdot_l[1],qdot_l[2],qdot_l[3],qdot_l[4],qdot_l[5]]
+	return np.array(qdot_rel).T;	
 def get_q_r(q_rel):
 	return np.array([-q_rel[5],-q_rel[4],-q_rel[3],-q_rel[2],-q_rel[1],-q_rel[0]]).T
 def get_q_l(q_rel):
@@ -138,6 +141,8 @@ def getActiveJointList(robotId):
 	print("=========================================================================")		
 	eef_num = numJoint-1;
 	return	active_joint_list,active_joint_num_list,eef_num
+def getControlVelocity(Kp,Kd,Ki,Xe,Xedot):
+	print("d")
 
 def initializeActiveJoints(robotId,active_joints_num):
 	for i in active_joints_num:
