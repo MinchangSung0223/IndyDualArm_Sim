@@ -29,7 +29,7 @@ def PybulletSetup(p,urdf_name = "model/IndyDualArm.urdf", CONTROL_FREQ = 240.0):
 	p.setPhysicsEngineParameter(fixedTimeStep = timeStep)
 	p.setAdditionalSearchPath(pybullet_data.getDataPath())
 	robotId = p.loadURDF(urdf_name, [0, 0, 0.0],[0, 0, 0, 1],flags=p.URDF_USE_SELF_COLLISION)
-	planeId = p.loadURDF("plane.urdf")
+	planeId = p.loadURDF("plane.urdf",[0, 0, -0.521])
 	p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
 	p.resetDebugVisualizerCamera(2,90,-15,[0,0,0.5])
 	p.resetBasePositionAndOrientation(robotId, [0, 0, 0], [0, 0, 0, 1])
@@ -38,7 +38,7 @@ def PybulletSetup(p,urdf_name = "model/IndyDualArm.urdf", CONTROL_FREQ = 240.0):
 	initializeActiveJoints(robotId,right_joint_num_list)
 	initializeActiveJoints(robotId,left_joint_num_list)
 	dt = 1.0/CONTROL_FREQ
-	return right_joint_num_list,left_joint_num_list,active_joint_num_list,robotId,dt
+	return right_joint_num_list,left_joint_num_list,active_joint_num_list[0:12],robotId,dt
 def rotMat(theta,axis):
     R = np.eye(3)
     if axis == "x":
