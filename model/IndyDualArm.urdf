@@ -22,10 +22,16 @@
 
 		</visual>
 		<collision>
-			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<origin rpy="0 0 0" xyz="0 0 0.11461"/>
 			<geometry>
-				<mesh filename="meshes/visual/body.stl"/>
+				<box size="0.4 0.6 0.22922" />
 			</geometry>
+		</collision>
+		<collision>
+			<origin rpy="0 0 0" xyz="0 0 0.22922"/>
+	     <geometry>
+	        <sphere radius="0.23"/>
+      </geometry>		
 		</collision>
 	</link>
 	
@@ -537,6 +543,13 @@
 	      </geometry>	 
 	      <material name="metal_white_grey"/>	          
 	    </visual>
+	    <collision>
+	      <origin rpy="0 0 0" xyz="0 0 -0.26024"/>
+	      <geometry>
+						<box size="1 1.2 0.52048	" />
+	      </geometry>	 
+	      <material name="metal_white_grey"/>	              
+	    </collision>	    
 	    <inertial>
 	      <mass value="2"/>
 	      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
